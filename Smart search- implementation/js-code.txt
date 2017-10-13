@@ -1,0 +1,87 @@
+jQuery("#OrgName").autocomplete({
+            source: function (request, response) {
+                var z = -1;
+                var ip = $("#OrgName").val();
+                var data = localStorage.getItem("Default_Location_data");
+
+                var myObject = JSON.parse(data);
+
+                var myArray = [];
+                for (var i in myObject) {
+                    myArray.push(myObject[i]);
+                }
+                var sifter = new Sifter(myArray);
+                var result = sifter.search(ip, {
+                    fields: ['CityName', 'Address1', 'Name', 'StateName'],
+                    sort: [{ field: 'Name', direction: 'asc' }],
+                    limit: 10
+                });
+                var arra = new Array();
+                for (var i = 0; i < result.items.length; i++) {
+                    arra.push(result.items[i].id);
+                }
+                var resultarra = new Array();
+                for (var i = 0; i < arra.length; i++) {
+                    resultarra.push(myArray[arra[i]]);
+                }
+                response(resultarra);
+            },
+
+            select: function (event, ui) {
+                $("#statusdiv").fadeOut();
+                $("#OrgID").val(ui.item.LocationId);
+                $("#OrgName").val(ui.item.Name);
+                $("#OrgAdr1").val(ui.item.Address1);
+                $("#OrgAdr2").val(ui.item.Address2);
+                $("#OriginCountryName").val(ui.item.CountryName+'('+ui.item.CountryCode+')');
+                $("#OrgCountryCode").val(ui.item.CountryCode);
+                $("#OrgCountry").val(ui.item.CountryId);
+                oselectedcountryid = ui.item.CountryId;
+                $("#OrgZipCode").val(ui.item.PostalCode);
+                $("#OrgZip").val(ui.item.PostalId);
+                $("#OrgStateName").val($.trim(ui.item.StateName));
+                $("#OriginationState_StateCode").val(ui.item.StateCode);
+                $("#OrgState").val(ui.item.StateId);
+                oselectedstate = ui.item.StateId;
+                $("#OrgCityName").val(ui.item.CityName);
+                $("#OrgCity").val(ui.item.CityId);
+                $("#OriginEmail").val(ui.item.ContactEmail)
+                $("#OriginContactPerson").val(ui.item.ContactName);
+                $("#OriginContactPhone").val(ui.item.ContactPhone);
+                $("#OrgFaxNo").val(ui.item.FaxNo);
+                $("#ShipperNotes").val(ui.item.Notes)
+                selectedCountryId = ui.item.CountryId;
+                return false;
+            }, delay: 500
+        })
+               .data("ui-autocomplete")._renderItem = function (ul, item) {
+               item.ContactName = item.ContactName != null ? item.ContactName : "";
+               item.ContactPhone = item.ContactPhone !=null ? item.ContactPhone : "";
+               return $("<li>")
+
+               .append("<div>" + "Name" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:" + item.Name + "<br>" + "Address1" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:" + item.Address1 + "," + "<br>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + item.CountryName + " - " + item.CityName + "," + "<br>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + item.StateCode + "&nbsp;&nbsp;&nbsp; " + item.PostalCode + "<br/>" + "Contact Person" + "&nbsp;&nbsp;:" + item.ContactName + "<br/>" + "Phone :" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:" + item.ContactPhone + "<br/></div>")
+               .appendTo(ul);
+           };
+		   
+		   
+		   
+		   
+		   function getcachedata(clientid){
+if(window.localStorage)
+        {
+            window.localStorage.clear();
+            $.ajax({
+                async: true,cache :false,global:false,
+                url: "/Auditing/cacheLocation",
+                type: 'POST',
+                data: {
+                    ClientID: clientid
+                },
+                success: function (data) {
+                    var arr = $.map(data, function(el) { return el });
+                    console.log(arr[0]);
+                    localStorage.setItem( 'Default_Location_data', JSON.stringify(arr));
+                },
+            });
+        }
+}
