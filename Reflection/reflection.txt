@@ -1,0 +1,6 @@
+ for (y = 0; y < columnprop.Count(); y++)
+                    {
+                        var propertyInfo = bolD[x].GetType().GetProperty(columnprop[y].AliasName);
+                        var value = propertyInfo.GetValue(bolD[x], null);
+                        xlWorkSheet.Cells[l, z++] = value;
+                    }
