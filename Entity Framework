@@ -1,0 +1,11 @@
+Entity framework - dot net core
+
+Nuget packages
+--------------------------------
+Microsoft.EntityFrameworkCore.Tools
+Pomelo.EntityFrameworkCore.MySql
+
+
+command to create Models from database (DB First Approach)
+-------------------------------------------------------------------------
+dotnet ef dbcontext scaffold "Server=localhost;Database=introact_db;User=root;Password=root;" "Pomelo.EntityFrameworkCore.MySql" -o DbModel -f
